@@ -15,26 +15,32 @@ const (
 	ldapDn = "cn=%s,dc=benzhi,dc=io"
 )
 
-func LoginEndpoint(context *gin.Context) {
+func DoLogin(ctx *gin.Context) {
 	var login models.Login
-	if err := context.BindJSON(&login); err == nil {
+	if err := ctx.BindJSON(&login); err == nil {
 		result := checkLdap(login)
 		if result {
-			session := sessions.Default(context)
+			session := sessions.Default(ctx)
 			session.Options(sessions.Options{MaxAge: consts.SessionMaxAge})
 			session.Set("username", login.Username)
 			session.Save()
+			ctx.JSON(http.StatusOK, consts.Success)
+		} else {
+			ctx.JSON(http.StatusOK, consts.WrongInput)
 		}
-		context.JSON(http.StatusOK, gin.H{"result": result})
 	} else {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, consts.WrongInput)
 	}
 }
 
-func LogoutEndpoint(context *gin.Context) {
-	session := sessions.Default(context)
+func LogoutEndpoint(ctx *gin.Context) {
+	session := sessions.Default(ctx)
 	session.Clear()
 	session.Save()
+}
+
+func LoginPage(ctx *gin.Context) {
+	ctx.HTML(http.StatusOK, "login.html", nil)
 }
 
 func checkLdap(login models.Login) bool {

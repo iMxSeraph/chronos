@@ -1,7 +1,7 @@
 package models
 
 type Error struct {
-	ErrCode int
-	ErrMsg string
+	ErrCode int `json:"errCode"`
+	ErrMsg string `json:"errMsg"`
 }
 

@@ -4,8 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/sessions"
 	"net/http"
-	"muxin.io/chronos/models"
 	"muxin.io/chronos/consts"
+	"net/url"
 )
 
 func LoginInterceptor() gin.HandlerFunc {
@@ -13,7 +13,8 @@ func LoginInterceptor() gin.HandlerFunc {
 		session := sessions.Default(context)
 		username := session.Get("username")
 		if username == nil {
-			context.JSON(http.StatusUnauthorized, models.Error{ErrCode: 1, ErrMsg: "请登录"})
+			context.Redirect(http.StatusFound, "/login?redirect=" + url.PathEscape(context.Request.RequestURI))
+			context.Abort()
 		} else {
 			session.Options(sessions.Options{MaxAge: consts.SessionMaxAge})
 			session.Save()

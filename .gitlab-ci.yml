@@ -1,0 +1,14 @@
+stages:
+  - build
+
+build:
+  stage: build
+  image: docker:stable
+  tags:
+    - muxin-io
+  services:
+    - docker:dind
+  script:
+    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+    - docker build -t imxseraph/muxin-io:chronos .
+    - docker push imxseraph/muxin-io:chronos

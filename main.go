@@ -18,9 +18,21 @@ func main() {
 	// Session支持
 	store := cookie.NewStore([]byte("muxin.io"))
 	site.Use(sessions.Sessions("session", store))
-	site.POST("/login", controllers.LoginEndpoint)
+	// 载入模板
+	site.LoadHTMLGlob("views/*")
+	// 载入静态文件
+	site.Static("/assets", "assets")
 
-	site.GET("/test", interceptors.LoginInterceptor(), controllers.Test)
+	// 分组定义
+	normal := site.Group("/")
+	{
+		normal.GET("/login", controllers.LoginPage)
+		normal.POST("/login", controllers.DoLogin)
+	}
+	login := site.Group("/", interceptors.LoginInterceptor())
+	{
+		login.GET("/test", controllers.Test)
+	}
 
 	site.Run(":8080")
 }
