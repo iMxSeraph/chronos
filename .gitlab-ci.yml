@@ -1,5 +1,6 @@
 stages:
   - build
+  - deploy
 
 build:
   stage: build
@@ -12,3 +13,18 @@ build:
     - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
     - docker build -t imxseraph/muxin-io:chronos .
     - docker push imxseraph/muxin-io:chronos
+
+deploy:
+  stage: deploy
+  image: centos:7
+  tags:
+    - muxin-io
+  script:
+    - yum install openssh-clients -y
+    - mkdir ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo "$DEPLOY_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan muxin.io > ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    - ssh deploy@muxin.io "cd deploy/chronos && sudo docker-compose down --rmi all && sudo docker-compose up -d"
