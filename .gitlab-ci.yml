@@ -16,11 +16,11 @@ build:
 
 deploy:
   stage: deploy
-  image: centos:7
+  image: alpine:latest
   tags:
     - muxin-io
   script:
-    - yum install openssh-clients -y
+    - apk update && apk add openssh-client
     - mkdir ~/.ssh
     - chmod 700 ~/.ssh
     - echo "$DEPLOY_KEY" > ~/.ssh/id_rsa
