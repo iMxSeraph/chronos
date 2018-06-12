@@ -9,5 +9,5 @@ RUN apk update && apk add git \
   && CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build main.go
 
 FROM scratch
-COPY --from=alpine $GOPATH/src/muxin.io/chronos/main /
+COPY --from=golang $GOPATH/src/muxin.io/chronos/main /
 CMD ["/main"]
