@@ -39,10 +39,6 @@ func LogoutEndpoint(ctx *gin.Context) {
 	session.Save()
 }
 
-func LoginPage(ctx *gin.Context) {
-	ctx.HTML(http.StatusOK, "login.html", nil)
-}
-
 func checkLdap(login models.Login) bool {
 	l, err := ldap.Dial("tcp", "ldap.benzhi.io:389")
 	if err != nil {
