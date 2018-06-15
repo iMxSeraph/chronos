@@ -8,8 +8,8 @@ import (
 
 const (
 	pushApi = "https://api.pushover.net/1/messages.json"
-	Muxix   = iota
-	Yating
+	Muxix   = "muxin"
+	Yating	= "yating"
 )
 
 type auth struct {
@@ -25,9 +25,11 @@ type message struct {
 	UrlTitle string `json:"url_title,omitempty"`
 }
 
-var authList = [2]auth{{Token: "a1f6fbivqopn2k9qshvceet4urkaxi", User: "upd74n3j9up7eky83gn564x1kchx9n"}, {Token: "a96ttsq2cdjwtse33ksowumhwgg3wx", User: "uvnzwbxxbovejpzso2mfz58geztd7y"}}
+var authList = map[string]auth{
+	"muxin":  {Token: "a96ttsq2cdjwtse33ksowumhwgg3wx", User: "uvnzwbxxbovejpzso2mfz58geztd7y"},
+	"yating": {Token: "a1f6fbivqopn2k9qshvceet4urkaxi", User: "upd74n3j9up7eky83gn564x1kchx9n"}}
 
-func Send(target int, title, msg string) int {
+func Send(target string, title, msg string) int {
 	reqObj := message{auth: authList[target], Title: title, Message: msg}
 	reqBody, _ := json.Marshal(reqObj)
 	resp, _ := http.Post(pushApi, "application/json", bytes.NewReader(reqBody))
