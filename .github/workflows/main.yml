@@ -29,4 +29,4 @@ jobs:
       - name: Create the key
         run: echo "${{ secrets.PRIVATE_KEY }}" > key && chmod 600 key
       - name: Deploy
-        run: ssh -i key -o StrictHostKeychecking=no root@muxin.io "cd deploy/chronos && docker-compose down --rmi all && docker-compose up -d"
+        run: ssh -i key -o StrictHostKeychecking=no root@muxin.io "cd /mnt/deploy/chronos && docker-compose down --rmi all && docker-compose up -d"
