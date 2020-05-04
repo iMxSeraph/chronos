@@ -1,0 +1,32 @@
+name: Go
+
+on:
+  push:
+    branches: [ master ]
+
+env:
+  IMAGE_NAME: imxseraph/muxin-io:chronos
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Build image
+        uses: docker build -t $IMAGE_NAME .
+
+      - name: Log into registry
+        uses: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+      - name: Push image
+        run: docker push $IMAGE_NAME
+  deploy:
+    needs: build
+    
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create the key
+        run: echo "${{ secrets.PRIVATE_KEY }}" > key && chmod 600 key
+      - name: Deploy
+        run: ssh -i key -o StrictHostKeychecking=no root@muxin.io "cd deploy/chronos && docker-compose down --rmi all && docker-compose up -d"
